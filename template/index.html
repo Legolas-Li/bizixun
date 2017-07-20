@@ -1,0 +1,77 @@
+{% extends 'base.html'%}
+
+{% block content-center%}
+<style>body,td{font-size:11px !important}</style>
+<table id="market" class="display compact" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>币种</th>
+                <th>最高价</th>
+                <th>最低价</th>
+                <th>点差</th>
+                <th>利润率</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>币种</th>
+                <th>最高</th>
+                <th>最低</th>
+                <th>点差</th>
+                <th>利润</th>
+            </tr>
+        </tfoot>
+        <tbody>
+	</tbody>
+</table>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function() {
+    $('#market').DataTable({
+	"paging": false, 
+    "scrollX": false,
+        //"sScrollX": "100%",
+            //"bScrollCollapse": true,
+	"order": [[ 4, "desc" ]],
+        "ajax": {
+		"url": '/api/market/data/',
+		"type": 'GET',
+	},
+        "columns": [
+            { "title": "币种", "data": "symbol" },
+            { "title": "最高", "class": "center",  
+              "data": function (data, type, full, mate){
+                return '￥'+data.highest+'/<a href="'+data.hHome+'" target="_blank">'+data.hPlatform+'</a>';
+            }},
+            { "title": "最低", "class": "center",
+              "data": function (data, type, full, mate){
+                return '￥'+data.lowest+'/<a href="'+data.lHome+'" target="_blank">'+data.lPlatform+'</a>';
+            }},
+            { "title": "点差", "class": "center",
+              "data": function (data, type, full, mate){
+                return '￥'+data.points;            
+            }},
+            { "title": "利润", "class": "center",
+              "data": function (data, type, full, mate){
+                return data.profits+'%';
+            }},
+        ],
+        "oLanguage": {
+            "sLengthMenu": "每页显示 _MENU_ 条记录",
+            "sZeroRecords": "抱歉， 没有找到",
+            "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+            "sInfoEmpty": "没有数据",
+            "sSearch": "搜索：",
+            "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+            "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "前一页",
+                "sNext": "后一页",
+                "sLast": "尾页"
+                },
+        "sZeroRecords": "没有检索到数据"
+        }});
+});
+
+{% endblock %}
