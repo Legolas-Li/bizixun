@@ -1,0 +1,6 @@
+django-mysql
+mysqlclient
+mysql-python
+requests
+lxml
+django_crontab
