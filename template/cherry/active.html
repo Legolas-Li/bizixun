@@ -1,0 +1,168 @@
+{% extends 'base.html'%}
+
+{% block content-center%}
+<!--<link rel="stylesheet" type="text/css" href="/statics/css/editor.dataTables.min.css">-->
+<!--<link rel="stylesheet" type="text/css" href="/statics/css/buttons.dataTables.min.css">-->
+<!--<link rel="stylesheet" type="text/css" href="/statics/css/select.dataTables.min.css">-->
+
+<!--<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.buttons.min.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.select.min.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.editor.min.js"></script>-->
+<script type="text/javascript" src="/statics/js/jquery.form.js"></script>
+
+<h1 class="page-header">活动信息
+    <!--<button id="addActive" class="btn btn-sm btn-success btn-labeled pull-right" type="button"  data-toggle="modal" data-target="#addActiveModal"><i class="fa fa-plus">创建活动信息</i></button>-->
+    <button id="addActive" class="btn btn-sm btn-success btn-labeled pull-right" type="button" onclick="addActive()"><i class="fa fa-plus">创建活动信息</i></button>
+</h1>
+<div class="col-lg-12">
+    <table id="active" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>活动地点</th>
+                <th>开始日期</th>
+                <th>结束日期</th>
+                <th>报名费</th>
+                <th>赠品名称</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="addActiveModal" tabindex="-1" role="dialog" aria-labelledby="addActiveModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addActiveModalLabel">创建活动信息</h4>
+            </div>
+            <div class="modal-body " id="addActiveModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">提示</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+// 自定义数组删除
+Array.prototype.indexOf = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val) return i;
+        }
+    return -1;
+};
+
+Array.prototype.remove = function(val) {
+    var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+    }
+};
+
+
+
+function addActive(){
+    $.ajax({
+        type: 'GET',
+        url: '/api/add/active/',
+        success:function(msg){
+            $('#addActiveModalLabel').html('创建活动信息');
+            $('#addActiveModalBody').html(msg);
+            $('#addActiveModal').modal('show');
+        }
+    });
+}
+
+var active_table=$('#active').DataTable();
+
+function getActiveTable(){
+    active_table.destroy();
+    active_table = $('#active').DataTable({
+        ajax: '/api/get/active/',
+        aLengthMenu: [[-1, 150, 300 ], ["ALL", 150, 300]],
+        columns: [
+	    { data: 'id' ,"visible": false},
+	    { data: 'name' , width:"25%"},
+	    { data: 'start_at' , width:"20%"},
+	    { data: 'end_at' , width:"20%"},
+	    { data: 'price' , width:"10%"},
+	    { data: 'gift' , width:"15%"},
+        { data: function ( data, type, full, meta ) {
+		    return '<button type="button" class="btn btn-xs btn-default pull-right" data-row-id="' + data.id + '"  onclick="javascript:editActive('+data.id+')"><span class="fa fa-pencil"></span></button> ' +
+                    '<button type="button" class="btn btn-xs btn-default pull-right" data-row-id="' + data.id + '"  onclick="javascript:dropActive('+data.id+')"><span class="fa fa-trash-o"></span></button> ';
+		} , width:"8%"},
+	    ],
+    });
+}
+
+function editActive(activeId){
+    $.ajax({
+        type: 'GET',
+        url: '/api/edit/active/',
+        data: {"id":activeId},
+        success:function(msg){
+            $('#addActiveModalLabel').html('修改活动信息');
+            $('#addActiveModalBody').html(msg);
+            $('#addActiveModal').modal('show');
+        }
+    });
+}
+
+function dropActive(activeId){
+    if (window.confirm("确定删除 ?")){
+        $.ajax({
+            type: 'POST',
+            url: '/api/drop/active/',
+            data: {"id":activeId},
+            success:function(msg){
+                getActiveTable();
+            }
+        });
+    }
+}
+
+function getStationTable(){
+    station_table = $('#station').DataTable({
+        ajax: '/api/get/station/',
+        aLengthMenu: [[-1, 150, 300 ], ["ALL", 150, 300]],
+        dom: 'Bfrtip',
+        columns: [
+	    { data: 'id' , width:"50%", "visible": false},
+	    { data: 'name' , width:"50%"},
+	],
+	select: true,
+        buttons: [
+                { extend: 'create', editor: Editor, text:"添加" },
+                { extend: 'edit',   editor: Editor, text:"编辑" },
+                { extend: 'remove', editor: Editor, text:"删除" },
+                //{ text:"刷新", action: function ( e, dt, node, config ) {
+                //    station_table.destroy();
+                //    getClassesTable()
+                //}}
+        ]
+    });
+}
+ 
+getActiveTable();
+
+
+{% endblock %}

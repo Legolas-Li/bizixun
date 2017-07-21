@@ -1,2 +1,3 @@
 *.pyc
 market/migrations/*
+cherry/migrations/*

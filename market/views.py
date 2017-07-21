@@ -12,23 +12,23 @@ from django.db.models import Count, Min, Max, Sum
 
 # Create your views here.
 def get_index_html(request):
-    return render(request, 'index.html')
+    return render(request, 'market/index.html')
 
 
 def get_market_data(request):
     market_list = []
-    symbol_list = models.Symbol.objects.all()
+    symbol_list = models.Symbol.objects.filter(enabled=True).filter(refresh=True)
     for i in symbol_list:
-        i_max = models.Market.objects.filter(symbol=i).filter(enabled=True).order_by('-price')[0]
-        i_min = models.Market.objects.filter(symbol=i).filter(enabled=True).order_by('price')[0]
+        i_max = models.Platform.objects.filter(symbol=i).filter(enabled=True).filter(refresh=True).exclude(price=0).order_by('-price')[0]
+        i_min = models.Platform.objects.filter(symbol=i).filter(enabled=True).filter(refresh=True).exclude(price=0).order_by('price')[0]
         market_json = {}
         market_json["symbol"] = i.name
         market_json["highest"] = i_max.price
-        market_json["hPlatform"] = i_max.platform
+        market_json["hPlatform"] = i_max.name
         market_json["hHome"] = i_max.home
 
         market_json["lowest"] = i_min.price
-        market_json["lPlatform"] = i_min.platform
+        market_json["lPlatform"] = i_min.name
         market_json["lHome"] = i_min.home
         points = round(i_max.price-i_min.price, 3)
         profits = round((points/i_min.price) * 100, 3)
@@ -42,22 +42,22 @@ def get_market_data(request):
 #    return result.content
 
 
-def get_price(url):
+def get_price(url, xpath):
     result = requests.get(url)
     selector = etree.HTML(result.content)
-    price = selector.xpath("/html/body/div[@id='container_outer']/div[@id='container']/div[@id='right_bar']/div[@id='sub_container']/div[@id='sub_component']/div[@id='sub_component_body']/div[@id='orderbook']/div[@id='price']")[0].text
+    #price = selector.xpath("/html/body/div[@id='container_outer']/div[@id='container']/div[@id='right_bar']/div[@id='sub_container']/div[@id='sub_component']/div[@id='sub_component_body']/div[@id='orderbook']/div[@id='price']")[0].text
+    price = selector.xpath(xpath)[0].text
     return price
 
 
 def update():
     symbol_list = models.Symbol.objects.all()
     for i in symbol_list:
-        symbol_list = models.Market.objects.filter(symbol=i)
-        for i in symbol_list:
-            price = get_price(i.url)
+        platform_list = models.Platform.objects.filter(symbol=i).filter(enabled=True).filter(refresh=True)
+        for i in platform_list:
+            price = get_price(i.url, i.xpath)
             i.price = price
             i.save()
 
 
-#data=Data()
-#data.update()
+#update()

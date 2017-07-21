@@ -16,9 +16,23 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from market import views as mkv
+from cherry import views as crv
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', mkv.get_index_html),
     url(r'^api/market/data/', mkv.get_market_data),
+
+
+    url(r'^index/', crv.get_index_html),
+    url(r'^market/', crv.get_market_html),
+    url(r'^api/set/symbol/', crv.set_symbol_data),
+    url(r'^api/get/symbol/', crv.get_symbol_data),
+    url(r'^api/set/platform/', crv.set_platform_data),
+    url(r'^api/get/platform/', crv.get_platform_data),
+
+
+    url(r'^login/$', crv.login, name='login'),
+    url(r'^logout/$', crv.logout, name='logout'),
+
 ]

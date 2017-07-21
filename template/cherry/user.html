@@ -1,0 +1,83 @@
+{% extends 'base.html'%}
+
+{% block content-center%}
+<link rel="stylesheet" type="text/css" href="/statics/css/editor.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="/statics/css/buttons.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="/statics/css/select.dataTables.min.css">
+
+<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.select.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/statics/js/dataTables.editor.min.js"></script>
+<!--<script type="text/javascript" src="/statics/js/jquery.form.js"></script>-->
+
+<h1 class="page-header">用户信息</h1>
+<div class="col-lg-12">
+    <table id="user" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>姓名</th>
+                <th>昵称</th>
+                <th>性别</th>
+                <th>年龄</th>
+                <th>身份证</th>
+                <th>手机号</th>
+                <th>注册日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">提示</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+
+var active_table=$('#user').DataTable();
+
+function getActiveTable(){
+    active_table.destroy();
+    active_table = $('#user').DataTable({
+        ajax: '/api/get/user/',
+        aLengthMenu: [[-1, 150, 300 ], ["ALL", 150, 300]],
+        columns: [
+	    { data: 'id' ,"visible": false},
+	    { data: 'name' , width:"7%"},
+	    { data: 'nick' , width:"10%"},
+	    { data: 'sex' , width:"7%"},
+	    { data: 'age' , width:"7%"},
+	    { data: 'PID' , width:"20%"},
+	    { data: 'phone' , width:"10%"},
+	    { data: 'sign_at' , width:"20%"},
+        { data: function ( data, type, full, meta ) {
+		    return '<button type="button" class="btn btn-xs btn-default pull-right" data-row-id="' + data.id + '"  onclick="javascript:editUser('+data.id+')"><span class="fa fa-pencil"></span></button> ' +
+                    '<button type="button" class="btn btn-xs btn-default pull-right" data-row-id="' + data.id + '"  onclick="javascript:dropUser('+data.id+')"><span class="fa fa-trash-o"></span></button> ';
+		} , width:"8%"},
+	    ],
+    });
+}
+
+
+ 
+getActiveTable();
+
+
+{% endblock %}
