@@ -144,7 +144,8 @@ function getPlatformTable(symbol){
 			{ label: 'Name', name: 'name' },
 			{ label: 'Home', name: 'home' },
 			{ label: 'Url', name: 'url' },
-			{ label: 'Xpath', name: 'xpath', type:'textarea'},
+			{ label: 'Xpath', name: 'xpath', type:'textarea',
+              default: "/html/body/div[@id='container_outer']/div[@id='container']/div[@id='right_bar']/div[@id='sub_container']/div[@id='sub_component']/div[@id='sub_component_body']/div[@id='orderbook']/div[@id='price']"},
 			{ label: 'Crontab-Refresh',  name: 'refresh',
 				type:'select', default: '1',
 				options:[{label:"Yes", value:'1'},{label:"No", value:'0'}]
