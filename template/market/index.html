@@ -8,7 +8,8 @@
                 <th>币种</th>
                 <th>最高</th>
                 <th>最低</th>
-                <th>点差利润</th>
+                <th>点差</th>
+                <th>利润</th>
             </tr>
         </thead>
         <tfoot>
@@ -16,7 +17,8 @@
                 <th>币种</th>
                 <th>最高</th>
                 <th>最低</th>
-                <th>点差利润</th>
+                <th>点差</th>
+                <th>利润</th>
             </tr>
         </tfoot>
         <tbody>
@@ -44,9 +46,13 @@ var market = $('#market').DataTable({
               "data": function (data, type, full, mate){
                 return '￥'+data.lowest+'<br><a href="'+data.lHome+'" target="_blank">'+data.lPlatform+'</a>';
             }},
-            { "title": "点差利润", "class": "center",
+            { "title": "点差", "class": "center",
               "data": function (data, type, full, mate){
-                return '￥'+data.points+'<br>'+data.profits+'%';
+                return '￥'+data.points;
+            }},
+            { "title": "利润", "class": "center",
+              "data": function (data, type, full, mate){
+                return data.profits+'%';
             }},
         ],
         "oLanguage": {

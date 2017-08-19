@@ -24,10 +24,10 @@
     <table id="symbol" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Show-Refresh</th>
-                <th>Description</th>
+                <th id="id">ID</th>
+                <th id="name">Name</th>
+                <th id="refresh">Show-Refresh</th>
+                <th id="description">Description</th>
             </tr>
         </thead>
     </table>
@@ -81,8 +81,8 @@ var SymbolEditor = new $.fn.dataTable.Editor({
     fields: [
         { label: 'Name', name: 'name' },
         { label: 'Show-Refresh',  name: 'refresh',
-            type:'select', default: '1',
-            options:[{label:"Yes", value:'1'},{label:"No", value:'0'}]
+            type:'select', default: "1",
+            options:[{label:"Yes", value:"1"},{label:"No", value:"0"}]
         },
         { label: 'Description',  name: 'description', type:'textarea'},
     ]
@@ -99,7 +99,7 @@ function getSymbolTable(){
                 return '<a onclick=getPlatformTable('+data.id+')>'+data.name+'</a>';
             }, width:"15%"},
             { data: function (data, type, full, mate){
-                if (data.refresh == '1'){
+                if (data.refresh == "1"){
                     return '<i class="fa fa-check"></i>';
                 } else {
                     return '<i class="fa fa-times" style="color:red"></i>';

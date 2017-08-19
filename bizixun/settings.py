@@ -43,7 +43,7 @@ INSTALLED_APPS = (
 )
 
 CRONJOBS = [
-            ('* * * * *', 'market.views.update')
+            ('*/6 * * * *', 'market.views.update')
           ]
 
 MIDDLEWARE_CLASSES = (

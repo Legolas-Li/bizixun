@@ -43,7 +43,8 @@ def get_market_data(request):
 
 
 def get_price(url, xpath):
-    result = requests.get(url)
+    headers = {"info":"Sorry to bother you, I need some market price. If have better API, Please let me know(327778674@qq.com).","User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"}
+    result = requests.request("GET",url,headers=headers)
     selector = etree.HTML(result.content)
     #price = selector.xpath("/html/body/div[@id='container_outer']/div[@id='container']/div[@id='right_bar']/div[@id='sub_container']/div[@id='sub_component']/div[@id='sub_component_body']/div[@id='orderbook']/div[@id='price']")[0].text
     price = selector.xpath(xpath)[0].text
@@ -55,9 +56,12 @@ def update():
     for i in symbol_list:
         platform_list = models.Platform.objects.filter(symbol=i).filter(enabled=True).filter(refresh=True)
         for i in platform_list:
-            price = get_price(i.url, i.xpath)
+            try:
+                price = get_price(i.url, i.xpath)
+            except Exception as e:
+                price = 0
+            print i, price
             i.price = price
             i.save()
-
 
 #update()
